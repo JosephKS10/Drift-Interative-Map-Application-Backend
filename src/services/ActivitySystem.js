@@ -1,39 +1,25 @@
 /**
- * ActivitySystem (Module 9)
+ * ActivitySystem (Module 9) — UPDATED
  *
  * Makes the campus feel alive even when nobody's chatting.
  *
- * Responsibilities:
- *  - Update agent mood/activity based on time of day
- *  - Broadcast state changes to connected clients
- *  - Inject campus events into agent awareness
- *
- * Runs on a 5-minute interval. Each tick:
- *  1. Get current hour
- *  2. For each agent, look up their timeBehavior schedule
- *  3. If their state has changed, update it and broadcast
+ * Changes from v1:
+ *  - Events loaded from melbourne-events.json instead of hardcoded
+ *  - Events are location-aware: agents near an event mention it more
+ *  - getEventsForPrompt() takes an agent param for proximity filtering
  */
 
+import { readFile } from "fs/promises";
 import { SocketEvents } from "../types/constants.js";
-
-// Campus-wide events that agents can reference in conversation
-const CAMPUS_EVENTS = [
-  { text: "UNIHACK hackathon this weekend at the Learning & Teaching Building", active: true },
-  { text: "Exam period starts next Monday — library extending to 24/7", active: true },
-  { text: "New GYG opened at Campus Centre — students are losing their minds", active: true },
-  { text: "Marko's 6am boot camp — every weekday at Monash Sport, first session free", recurring: true },
-  { text: "International food night this Thursday at the Campus Centre", active: true },
-  { text: "Alexander Theatre showing student films Friday afternoon", active: true },
-];
 
 export class ActivitySystem {
   constructor(campusData, io) {
     this._agents = campusData.agents;
     this._io = io;
     this._intervalId = null;
-    this._lastStates = new Map(); // agentId → { mood, activity }
+    this._lastStates = new Map();
+    this._events = [];  // loaded from JSON
 
-    // Store initial states
     for (const agent of this._agents) {
       this._lastStates.set(agent.id, {
         mood: agent.state.mood,
@@ -45,36 +31,43 @@ export class ActivitySystem {
   }
 
   /**
-   * Start the periodic update loop.
-   * Checks every intervalMs (default 5 minutes) and broadcasts changes.
+   * Load events from JSON file.
+   * Call this during server boot, after constructor.
    */
-  start(intervalMs = 5 * 60 * 1000) {
-    // Run immediately on start
-    this.tick();
-
-    // Then run periodically
-    this._intervalId = setInterval(() => this.tick(), intervalMs);
-    console.log(`[Activity] Update loop started (every ${intervalMs / 1000}s)`);
-  }
-
-  /**
-   * Stop the update loop.
-   */
-  stop() {
-    if (this._intervalId) {
-      clearInterval(this._intervalId);
-      this._intervalId = null;
-      console.log(`[Activity] Update loop stopped`);
+  async loadEvents(filePath) {
+    try {
+      const raw = await readFile(filePath, "utf-8");
+      const data = JSON.parse(raw);
+      this._events = data.events || [];
+      console.log(`[Activity] Loaded ${this._events.length} events from ${filePath}`);
+      console.log(`[Activity] Source: ${data.source || "unknown"}`);
+      console.log(`[Activity] Scraped at: ${data.scrapedAt || "unknown"}`);
+    } catch (err) {
+      console.warn(`[Activity] Could not load events file: ${err.message}`);
+      console.warn(`[Activity] Using fallback hardcoded events`);
+      this._events = FALLBACK_EVENTS;
     }
   }
 
   /**
-   * Single update tick. Check time, update agents, broadcast changes.
+   * Start the periodic update loop.
    */
+  start(intervalMs = 5 * 60 * 1000) {
+    this.tick();
+    this._intervalId = setInterval(() => this.tick(), intervalMs);
+    console.log(`[Activity] Update loop started (every ${intervalMs / 1000}s)`);
+  }
+
+  stop() {
+    if (this._intervalId) {
+      clearInterval(this._intervalId);
+      this._intervalId = null;
+    }
+  }
+
   tick() {
     const now = new Date();
     const hour = now.getHours();
-    const minute = now.getMinutes();
     let changedCount = 0;
 
     for (const agent of this._agents) {
@@ -86,17 +79,10 @@ export class ActivitySystem {
                       lastState.activity !== newState.activity;
 
       if (changed) {
-        // Update the agent's live state
         agent.state.mood = newState.mood;
         agent.state.activity = newState.activity;
+        this._lastStates.set(agent.id, { mood: newState.mood, activity: newState.activity });
 
-        // Store for next comparison
-        this._lastStates.set(agent.id, {
-          mood: newState.mood,
-          activity: newState.activity,
-        });
-
-        // Broadcast to all connected clients
         this._io.emit(SocketEvents.AGENT_UPDATE, {
           agentId: agent.id,
           name: agent.name,
@@ -115,14 +101,9 @@ export class ActivitySystem {
     }
   }
 
-  /**
-   * Force update all agents to current time state.
-   * Useful after server restart to sync state with clock.
-   */
   syncAll() {
     const hour = new Date().getHours();
     let updated = 0;
-
     for (const agent of this._agents) {
       const state = this._getTimeBehavior(agent, hour);
       if (state) {
@@ -132,35 +113,83 @@ export class ActivitySystem {
         updated++;
       }
     }
-
     console.log(`[Activity] Synced ${updated} agents to current time (${new Date().toLocaleTimeString("en-AU")})`);
   }
 
   /**
-   * Get active campus events for prompt injection.
-   * Returns events that agents might mention in conversation.
+   * Get events relevant to a specific agent, sorted by proximity.
+   * Events within 5km get priority. City-wide events always included.
+   *
+   * @param {Object} agent - agent object with location.lat/lng
+   * @param {number} maxEvents - max events to return (default 5)
+   * @returns {Array} sorted events with distance
    */
-  static getActiveEvents() {
-    return CAMPUS_EVENTS.filter((e) => e.active || e.recurring);
+  getEventsForAgent(agent, maxEvents = 5) {
+    if (this._events.length === 0) return [];
+
+    const active = this._events.filter((e) => e.active);
+
+    // Calculate distance from agent to each event
+    const withDistance = active.map((event) => {
+      const dist = event.location?.lat
+        ? this._haversineDistance(
+            agent.location.lat, agent.location.lng,
+            event.location.lat, event.location.lng
+          )
+        : 999999;
+
+      return { ...event, distanceFromAgent: Math.round(dist) };
+    });
+
+    // Sort: nearby events first, then city-wide
+    withDistance.sort((a, b) => a.distanceFromAgent - b.distanceFromAgent);
+
+    return withDistance.slice(0, maxEvents);
   }
 
   /**
-   * Get formatted events for prompt injection.
+   * Get formatted events for an agent's prompt injection.
+   * Location-aware: nearby events are marked as "NEARBY" so the agent
+   * mentions them more naturally.
+   *
+   * @param {Object} agent - agent object (optional, falls back to all events)
+   * @returns {string|null}
    */
-  static getEventsForPrompt() {
-    const events = ActivitySystem.getActiveEvents();
+  getEventsForPrompt(agent) {
+    let events;
+
+    if (agent) {
+      events = this.getEventsForAgent(agent, 6);
+    } else {
+      events = this._events.filter((e) => e.active).slice(0, 6);
+    }
+
     if (events.length === 0) return null;
 
-    let ctx = "## CAMPUS EVENTS (mention these naturally if relevant)\n";
+    let ctx = "## MELBOURNE EVENTS (mention these naturally if relevant)\n";
+    ctx += "Share these when someone asks what's happening or when the topic fits.\n\n";
+
     for (const event of events) {
-      ctx += `- ${event.text}\n`;
+      const nearby = event.distanceFromAgent && event.distanceFromAgent < 2000;
+      const prefix = nearby ? "📍 NEARBY: " : "";
+      ctx += `- ${prefix}${event.title}`;
+      if (event.date) ctx += ` (${event.date})`;
+      ctx += `: ${event.description}`;
+      if (event.location?.name) ctx += ` At ${event.location.name}.`;
+      if (event.time && event.time !== "Varies") ctx += ` ${event.time}.`;
+      ctx += "\n";
     }
+
     return ctx;
   }
 
   /**
-   * Look up time-based behavior from agent's schedule.
+   * Get all active events (for API endpoint).
    */
+  getActiveEvents() {
+    return this._events.filter((e) => e.active);
+  }
+
   _getTimeBehavior(agent, hour) {
     if (!agent.timeBehavior) return null;
 
@@ -170,7 +199,6 @@ export class ActivitySystem {
       const [endH] = endStr.split(":").map(Number);
 
       if (startH > endH) {
-        // Overnight range (e.g., 22:00-06:00)
         if (hour >= startH || hour < endH) return state;
       } else {
         if (hour >= startH && hour < endH) return state;
@@ -179,11 +207,33 @@ export class ActivitySystem {
     return null;
   }
 
+  _haversineDistance(lat1, lng1, lat2, lng2) {
+    const R = 6371000;
+    const dLat = ((lat2 - lat1) * Math.PI) / 180;
+    const dLng = ((lng2 - lng1) * Math.PI) / 180;
+    const a =
+      Math.sin(dLat / 2) ** 2 +
+      Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLng / 2) ** 2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  }
+
   getStats() {
     const states = {};
     for (const agent of this._agents) {
       states[agent.name] = { mood: agent.state.mood, activity: agent.state.activity };
     }
-    return { agentStates: states, eventsActive: CAMPUS_EVENTS.filter((e) => e.active).length };
+    return {
+      agentStates: states,
+      totalEvents: this._events.length,
+      activeEvents: this._events.filter((e) => e.active).length,
+    };
   }
 }
+
+// Fallback if melbourne-events.json doesn't exist
+const FALLBACK_EVENTS = [
+  { id: "fb-1", title: "UNIHACK hackathon this weekend", description: "At the Learning & Teaching Building, Monash Clayton", location: { name: "LTB", lat: -37.9100, lng: 145.1300, neighborhood: "Clayton" }, active: true },
+  { id: "fb-2", title: "Exam period starts next Monday", description: "Library extending to 24/7", location: { name: "Campus", lat: -37.9106, lng: 145.1365, neighborhood: "Clayton" }, active: true },
+];

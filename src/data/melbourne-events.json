@@ -1,0 +1,505 @@
+{
+  "events": [
+    {
+      "id": "evt-001",
+      "title": "Melbourne International Comedy Festival",
+      "description": "It's the 40th anniversary of Melbourne's biggest barrel of laughs. The whole city gets taken over by stand-up, sketch, and cabaret, so grab some friends and go find your new favorite comedian.",
+      "location": {
+        "name": "Various Venues (Hub: Melbourne Town Hall)",
+        "lat": -37.8149,
+        "lng": 144.9663,
+        "neighborhood": "CBD"
+      },
+      "date": "March 25 - April 19, 2026",
+      "time": "Various times",
+      "category": "arts",
+      "source": "https://www.google.com/search?q=comedyfestival.com.au",
+      "relevantToAgents": [
+        "agent-local",
+        "agent-arts"
+      ],
+      "active": true
+    },
+    {
+      "id": "evt-002",
+      "title": "Formula 1 Australian Grand Prix",
+      "description": "The F1 circus rolls into Albert Park for a weekend of high-octane racing. Even if you're not a petrolhead, the atmosphere around the track and the city is absolutely electric.",
+      "location": {
+        "name": "Albert Park Grand Prix Circuit",
+        "lat": -37.8497,
+        "lng": 144.968,
+        "neighborhood": "Albert Park"
+      },
+      "date": "March 12 - 15, 2026",
+      "time": "All day",
+      "category": "sports",
+      "source": "https://www.google.com/search?q=grandprix.com.au",
+      "relevantToAgents": [
+        "agent-sports",
+        "agent-tourist"
+      ],
+      "active": true
+    },
+    {
+      "id": "evt-003",
+      "title": "Melbourne Food and Wine Festival",
+      "description": "A 10-day feast celebrating why Melbourne is Australia's culinary capital. You'll find long lunches, global chef collaborations, and laneway pop-ups all over town.",
+      "location": {
+        "name": "Various Venues (Hub: Federation Square)",
+        "lat": -37.818,
+        "lng": 144.9691,
+        "neighborhood": "CBD"
+      },
+      "date": "March 20 - 29, 2026",
+      "time": "Various times",
+      "category": "food",
+      "source": "whatson.melbourne.vic.gov.au",
+      "relevantToAgents": [
+        "agent-foodie",
+        "agent-local"
+      ],
+      "active": true
+    },
+    {
+      "id": "evt-004",
+      "title": "안녕, MELBOURNE (Hello Melbourne) K-Pop Festival",
+      "description": "A massive rising K-pop festival hitting Australian shores for the first time. Get ready for an epic day of world-class production and top-tier performances at Flemington.",
+      "location": {
+        "name": "Flemington Racecourse",
+        "lat": -37.7876,
+        "lng": 144.9088,
+        "neighborhood": "Flemington"
+      },
+      "date": "March 14, 2026",
+      "time": "Starts 2:00 PM",
+      "category": "music",
+      "source": "https://www.google.com/search?q=megatix.com.au",
+      "relevantToAgents": [
+        "agent-music",
+        "agent-youth"
+      ],
+      "active": true
+    },
+    {
+      "id": "evt-005",
+      "title": "Melbourne St. Patrick's Festival",
+      "description": "Celebrate St. Paddy's Day by the bay with this free, family-friendly event. Expect plenty of live Irish folk music, dancing, and great community vibes right in the heart of St Kilda.",
+      "location": {
+        "name": "O'Donnell Gardens",
+        "lat": -37.868,
+        "lng": 144.9782,
+        "neighborhood": "St Kilda"
+      },
+      "date": "March 15, 2026",
+      "time": "10:00 AM - 6:00 PM",
+      "category": "community",
+      "source": "https://www.google.com/search?q=melbournestpatricksday.com.au",
+      "relevantToAgents": [
+        "agent-local",
+        "agent-family"
+      ],
+      "active": true
+    },
+    {
+      "id": "evt-006",
+      "title": "Yarraville Festival",
+      "description": "The Inner West's favorite street party is back for its 43rd year. Wander through the village precinct for fantastic local food, market stalls, and live entertainment.",
+      "location": {
+        "name": "Yarraville Village Precinct",
+        "lat": -37.8166,
+        "lng": 144.8908,
+        "neighborhood": "Yarraville"
+      },
+      "date": "March 22, 2026",
+      "time": "10:00 AM - 6:00 PM",
+      "category": "community",
+      "source": "maribyrnong.vic.gov.au",
+      "relevantToAgents": [
+        "agent-local",
+        "agent-westside"
+      ],
+      "active": true
+    },
+    {
+      "id": "evt-007",
+      "title": "Melbourne Highland Games & Celtic Festival",
+      "description": "Dust off your tartan and head to Croydon for a day of pipe bands, Highland dancing, and heavy events like the caber toss. A fantastic celebration of Scottish and Celtic culture.",
+      "location": {
+        "name": "Eastfield Park",
+        "lat": -37.8015,
+        "lng": 145.2917,
+        "neighborhood": "Croydon"
+      },
+      "date": "March 29, 2026",
+      "time": "9:00 AM - 5:00 PM",
+      "category": "community",
+      "source": "melbournehighlandgames.org.au",
+      "relevantToAgents": [
+        "agent-local",
+        "agent-cultural"
+      ],
+      "active": true
+    },
+    {
+      "id": "evt-008",
+      "title": "Tesselaar KaBloom Festival of Flowers",
+      "description": "Head up to the Dandenong Ranges to frolic through spectacular fields of autumn blooms. It's a gorgeous day trip filled with colorful flowers, circus performances, and great photo ops.",
+      "location": {
+        "name": "Tesselaar Flower Farm",
+        "lat": -37.8288,
+        "lng": 145.4267,
+        "neighborhood": "Silvan"
+      },
+      "date": "March 21 - April 19, 2026",
+      "time": "10:00 AM - 5:00 PM",
+      "category": "nature",
+      "source": "timeout.com",
+      "relevantToAgents": [
+        "agent-nature",
+        "agent-family"
+      ],
+      "active": true
+    },
+    {
+      "id": "evt-009",
+      "title": "Melbourne International Flower and Garden Show",
+      "description": "The Southern Hemisphere's biggest horticultural event takes over the stunning Carlton Gardens. Browse world-class landscape designs, buy some rare plants, and get inspired for your own backyard.",
+      "location": {
+        "name": "Carlton Gardens & Royal Exhibition Building",
+        "lat": -37.8061,
+        "lng": 144.9703,
+        "neighborhood": "Carlton"
+      },
+      "date": "March 25 - 29, 2026",
+      "time": "9:00 AM - 5:00 PM",
+      "category": "nature",
+      "source": "whatson.melbourne.vic.gov.au",
+      "relevantToAgents": [
+        "agent-nature",
+        "agent-home"
+      ],
+      "active": true
+    },
+    {
+      "id": "evt-010",
+      "title": "Inked Expo Melbourne 2026",
+      "description": "A massive gathering of tattoo artists and enthusiasts under one roof at the MCEC. You can get inked on the spot, watch live art being created, or just soak in the incredible counter-culture vibes.",
+      "location": {
+        "name": "Melbourne Convention and Exhibition Centre",
+        "lat": -37.8256,
+        "lng": 144.9536,
+        "neighborhood": "South Wharf"
+      },
+      "date": "March 27 - 29, 2026",
+      "time": "Starts 10:00 AM",
+      "category": "arts",
+      "source": "eventbrite.com.au",
+      "relevantToAgents": [
+        "agent-arts",
+        "agent-subculture"
+      ],
+      "active": true
+    },
+    {
+      "id": "evt-011",
+      "title": "CommBank Socceroos vs Curacao",
+      "description": "Catch the Socceroos in action right here in Melbourne before they gear up for the 2026 FIFA World Cup. It's an international friendly double-header that football fans won't want to miss.",
+      "location": {
+        "name": "Marvel Stadium",
+        "lat": -37.8165,
+        "lng": 144.9472,
+        "neighborhood": "Docklands"
+      },
+      "date": "March 31, 2026",
+      "time": "7:00 PM",
+      "category": "sports",
+      "source": "visitvictoria.com",
+      "relevantToAgents": [
+        "agent-sports",
+        "agent-football"
+      ],
+      "active": true
+    },
+    {
+      "id": "evt-012",
+      "title": "Art of the Score: The Music of James Horner",
+      "description": "The Melbourne Symphony Orchestra is playing the epic scores from films like Titanic, Avatar, and Braveheart live. It's a truly powerful way to experience some of cinema's greatest soundtracks.",
+      "location": {
+        "name": "Hamer Hall",
+        "lat": -37.8214,
+        "lng": 144.9682,
+        "neighborhood": "Southbank"
+      },
+      "date": "March 27 - 29, 2026",
+      "time": "7:30 PM",
+      "category": "music",
+      "source": "timeout.com",
+      "relevantToAgents": [
+        "agent-arts",
+        "agent-music"
+      ],
+      "active": true
+    },
+    {
+      "id": "evt-013",
+      "title": "The Game Expo 2026",
+      "description": "Melbourne's very own convention dedicated entirely to gaming culture, esports, and tabletop games. A perfect weekend to geek out, try unreleased indie games, and watch high-level tournaments.",
+      "location": {
+        "name": "Melbourne Convention and Exhibition Centre",
+        "lat": -37.8256,
+        "lng": 144.9536,
+        "neighborhood": "South Wharf"
+      },
+      "date": "March 14 - 15, 2026",
+      "time": "Starts 10:00 AM",
+      "category": "community",
+      "source": "eventbrite.com.au",
+      "relevantToAgents": [
+        "agent-gaming",
+        "agent-youth"
+      ],
+      "active": true
+    },
+    {
+      "id": "evt-014",
+      "title": "Melbourne CBD Holi - Festival of Colors",
+      "description": "Celebrate the vibrant Indian festival of Holi right in Treasury Gardens. Expect a massive color throw, energetic Bollywood beats, and delicious food stalls in a joyous community atmosphere.",
+      "location": {
+        "name": "Treasury Gardens",
+        "lat": -37.8138,
+        "lng": 144.9772,
+        "neighborhood": "East Melbourne"
+      },
+      "date": "March 14, 2026",
+      "time": "12:00 PM - 5:00 PM",
+      "category": "community",
+      "source": "eventbrite.com.au",
+      "relevantToAgents": [
+        "agent-cultural",
+        "agent-local"
+      ],
+      "active": true
+    },
+    {
+      "id": "evt-015",
+      "title": "Live at the Gardens: Bliss N Eso",
+      "description": "Aussie hip-hop legends Bliss N Eso are taking over the beautiful Royal Botanic Gardens for a sunset gig. Supported by Drapht and Horrorshow, it's going to be an iconic night of local music.",
+      "location": {
+        "name": "Royal Botanic Gardens Victoria",
+        "lat": -37.8304,
+        "lng": 144.9796,
+        "neighborhood": "South Yarra"
+      },
+      "date": "March 15, 2026",
+      "time": "6:00 PM - 10:00 PM",
+      "category": "music",
+      "source": "whatson.melbourne.vic.gov.au",
+      "relevantToAgents": [
+        "agent-music",
+        "agent-nightlife"
+      ],
+      "active": true
+    },
+    {
+      "id": "evt-016",
+      "title": "The Diary of Anne Frank (Theatre)",
+      "description": "A moving and intimate theatrical production of the classic historical diary. Staged at the historic Athenaeum Theatre, it's a powerful experience for drama lovers.",
+      "location": {
+        "name": "Athenaeum Theatre One",
+        "lat": -37.8143,
+        "lng": 144.9669,
+        "neighborhood": "CBD"
+      },
+      "date": "March 4 - 27, 2026",
+      "time": "Various times",
+      "category": "arts",
+      "source": "ticketmaster.com.au",
+      "relevantToAgents": [
+        "agent-arts",
+        "agent-theatre"
+      ],
+      "active": true
+    },
+    {
+      "id": "evt-017",
+      "title": "TAB Australian Cup Day",
+      "description": "One of the premier race days of the Melbourne autumn racing carnival. Get dressed up and head to Flemington for high-stakes horse racing and excellent hospitality.",
+      "location": {
+        "name": "Flemington Racecourse",
+        "lat": -37.7876,
+        "lng": 144.9088,
+        "neighborhood": "Flemington"
+      },
+      "date": "March 28, 2026",
+      "time": "Starts 11:00 AM",
+      "category": "sports",
+      "source": "ticketmaster.com.au",
+      "relevantToAgents": [
+        "agent-sports",
+        "agent-social"
+      ],
+      "active": true
+    },
+    {
+      "id": "evt-018",
+      "title": "AFL: Melbourne v St Kilda",
+      "description": "Footy is back! Watch the Demons clash with the Saints in a thrilling Round 1 matchup. Nothing beats the roar of the crowd at the mighty MCG on a Sunday afternoon.",
+      "location": {
+        "name": "Melbourne Cricket Ground (MCG)",
+        "lat": -37.8199,
+        "lng": 144.9834,
+        "neighborhood": "East Melbourne"
+      },
+      "date": "March 15, 2026",
+      "time": "1:10 PM",
+      "category": "sports",
+      "source": "whatson.melbourne.vic.gov.au",
+      "relevantToAgents": [
+        "agent-sports",
+        "agent-local"
+      ],
+      "active": true
+    },
+    {
+      "id": "evt-019",
+      "title": "Moonlight Cinema",
+      "description": "Pack a picnic blanket and some snacks for an outdoor movie night under the stars. Set in the lush surroundings of the Botanic Gardens, it's a staple of the Melbourne warm-weather season.",
+      "location": {
+        "name": "Royal Botanic Gardens Victoria",
+        "lat": -37.8304,
+        "lng": 144.9796,
+        "neighborhood": "South Yarra"
+      },
+      "date": "Until April 5, 2026",
+      "time": "Gates at 6:00 PM",
+      "category": "arts",
+      "source": "timeout.com",
+      "relevantToAgents": [
+        "agent-arts",
+        "agent-date-night"
+      ],
+      "active": true
+    },
+    {
+      "id": "evt-020",
+      "title": "The Great Gatsby: A Jazz Ballet Odyssey",
+      "description": "A dazzling theatrical spectacle that fuses jazz, tap, and ballet to bring the roaring twenties to life. Expect glittering costumes, high energy, and a completely fresh take on Gatsby.",
+      "location": {
+        "name": "Arts Centre Melbourne",
+        "lat": -37.8214,
+        "lng": 144.9682,
+        "neighborhood": "Southbank"
+      },
+      "date": "March 18 - April 5, 2026",
+      "time": "Evening performances",
+      "category": "arts",
+      "source": "whatson.melbourne.vic.gov.au",
+      "relevantToAgents": [
+        "agent-arts",
+        "agent-nightlife"
+      ],
+      "active": true
+    },
+    {
+      "id": "evt-021",
+      "title": "Crush, Melt, Recycle Workshop",
+      "description": "Drop into the Library at The Dock Makerspace to see exactly how plastic waste gets transformed into new products. It's a fascinating, hands-on look at sustainability and local recycling efforts.",
+      "location": {
+        "name": "Library at The Dock",
+        "lat": -37.82,
+        "lng": 144.9409,
+        "neighborhood": "Docklands"
+      },
+      "date": "March 26, 2026",
+      "time": "Afternoon",
+      "category": "free",
+      "source": "whatson.melbourne.vic.gov.au",
+      "relevantToAgents": [
+        "agent-free",
+        "agent-eco"
+      ],
+      "active": true
+    },
+    {
+      "id": "evt-022",
+      "title": "Free Guided Walk: Royal Botanic Gardens",
+      "description": "Join an expert guide for a tranquil morning stroll through one of the world's most beautiful botanic gardens. You'll discover hidden pathways, rare plants, and plenty of local history.",
+      "location": {
+        "name": "Royal Botanic Gardens Victoria",
+        "lat": -37.8304,
+        "lng": 144.9796,
+        "neighborhood": "South Yarra"
+      },
+      "date": "Daily in March 2026",
+      "time": "10:30 AM",
+      "category": "free",
+      "source": "whatson.melbourne.vic.gov.au",
+      "relevantToAgents": [
+        "agent-free",
+        "agent-nature"
+      ],
+      "active": true
+    },
+    {
+      "id": "evt-023",
+      "title": "Rose Street Artists' Market",
+      "description": "A Fitzroy institution where you can buy handmade goods, jewelry, and art directly from Melbourne's best creators. Grab a coffee, browse the stalls, and soak up the bohemian weekend vibe.",
+      "location": {
+        "name": "Rose Street Market",
+        "lat": -37.7998,
+        "lng": 144.9782,
+        "neighborhood": "Fitzroy"
+      },
+      "date": "Every Weekend in March 2026",
+      "time": "10:00 AM - 4:00 PM",
+      "category": "markets",
+      "source": "rosestmarket.com.au",
+      "relevantToAgents": [
+        "agent-markets",
+        "agent-arts"
+      ],
+      "active": true
+    },
+    {
+      "id": "evt-024",
+      "title": "Queen Victoria Market (General & Specialty Markets)",
+      "description": "Melbourne's most iconic marketplace is buzzing every week with fresh produce, hot jam donuts, and specialty artisan stalls. A must-visit whether you're grocery shopping or just hungry for street food.",
+      "location": {
+        "name": "Queen Victoria Market",
+        "lat": -37.8076,
+        "lng": 144.9568,
+        "neighborhood": "CBD"
+      },
+      "date": "Tuesday, Thursday - Sunday",
+      "time": "6:00 AM - 3:00 PM",
+      "category": "markets",
+      "source": "qvm.com.au",
+      "relevantToAgents": [
+        "agent-markets",
+        "agent-foodie"
+      ],
+      "active": true
+    },
+    {
+      "id": "evt-025",
+      "title": "Mystery Sidedoor City: Wine and Asian Fusion Bites",
+      "description": "Uncover Melbourne's hidden culinary gems on a guided tasting adventure. You'll get exclusive off-menu bites and expertly paired drinks at some of the city's most secretive venues.",
+      "location": {
+        "name": "Secret CBD Locations",
+        "lat": -37.8136,
+        "lng": 144.9631,
+        "neighborhood": "CBD"
+      },
+      "date": "Ongoing through March 2026",
+      "time": "Evening tours",
+      "category": "food",
+      "source": "whatson.melbourne.vic.gov.au",
+      "relevantToAgents": [
+        "agent-foodie",
+        "agent-nightlife"
+      ],
+      "active": true
+    }
+  ],
+  "scrapedAt": "2026-03-14T16:18:25Z"
+}

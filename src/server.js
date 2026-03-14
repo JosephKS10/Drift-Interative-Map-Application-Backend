@@ -128,6 +128,15 @@ app.get("/api/places", (_req, res) => {
   res.json(placesData);
 });
 
+app.get("/api/events", (_req, res) => {
+  if (!activity) return res.status(503).json({ error: "Loading" });
+  res.json({
+    events: activity.getActiveEvents(),
+    total: activity.getActiveEvents().length,
+  });
+});
+
+
 app.get("/api/agents/:id/memories", (req, res) => {
   const agentId = req.params.id;
   const userId = req.headers["x-user-id"] || "anonymous";
@@ -201,13 +210,17 @@ async function start() {
     new URL("data/clayton-campus.json", import.meta.url).pathname
   );
 
-  engine = new AgentEngine(campusData, placesData, gossipData);
+  activity = new ActivitySystem(campusData, io);
+  await activity.loadEvents(
+    new URL("data/melbourne-events.json", import.meta.url).pathname
+  );
+  activity.syncAll();   
+  activity.start();     
+
+   // Engine gets activity reference for event injection
+  engine = new AgentEngine(campusData, placesData, gossipData, activity);
 
   setupSocketHandlers(io, engine, campusData);
-
-  activity = new ActivitySystem(campusData, io);
-  activity.syncAll();   // sync agents to current time on boot
-  activity.start();     // start 5-minute update loop
 
   httpServer.listen(config.port, () => {
     console.log(`

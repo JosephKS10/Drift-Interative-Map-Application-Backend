@@ -5,7 +5,6 @@ import { ProximityZone } from "../types/constants.js";
 import { MemoryManager } from "./MemoryManager.js";
 import { LocalKnowledge } from "./LocalKnowledge.js";
 import { GossipEngine } from "./GossipEngine.js";
-import { ActivitySystem } from "./ActivitySystem.js";
 
 /**
  * AgentEngine (Module 3)
@@ -22,11 +21,12 @@ import { ActivitySystem } from "./ActivitySystem.js";
  * sent as a cached system block. Layers 3-5 are the user message prefix.
  */
 export class AgentEngine {
-  constructor(campusData, placesData, gossipData) {
+  constructor(campusData, placesData, gossipData, activitySystem) {
     this.client = new Anthropic({ apiKey: config.anthropic.apiKey });
     this.campusData = campusData;
     this.placesData = placesData;
     this.gossipData = gossipData;
+    this.activity = activitySystem || null;
 
     // Pre-generate and cache all personality prompts at boot
     this.personalityPrompts = new Map();
@@ -201,7 +201,7 @@ export class AgentEngine {
       parts.push(agentGossip);
     }
 
-     const events = ActivitySystem.getEventsForPrompt();
+    const events = this.activity.getEventsForPrompt(agent);
     if (events) {
       parts.push(events);
     }
