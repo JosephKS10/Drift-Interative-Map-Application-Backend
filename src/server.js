@@ -58,6 +58,35 @@ app.get("/health", (_req, res) => {
   });
 });
 
+app.get("/api/campus/all", (_req, res) => {
+  if (!campusData) return res.status(503).json({ error: "Data loading" });
+
+  res.json({
+    id: "all",
+    name: "Melbourne & Monash Clayton",
+    center: { lat: -37.8136, lng: 144.9631 },
+    radius: 15000,
+    mapboxStyle: "mapbox://styles/mapbox/dark-v11",
+    defaultZoom: 12,
+    bounds: {
+      north: -37.75,
+      south: -37.92,
+      west: 144.89,
+      east: 145.15
+    },
+    agents: campusData.agents.map((a) => ({
+      id: a.id,
+      name: a.name,
+      age: a.age,
+      avatar: a.avatar,
+      role: a.role,
+      location: a.location,
+      mood: a.state.mood,
+      activity: a.state.activity,
+    })),
+  });
+});
+
 app.get("/api/campus/:campusId", (req, res) => {
   const campus = neighborhood?.getCampus(req.params.campusId);
   if (!campus) {
