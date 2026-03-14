@@ -1,0 +1,120 @@
+{
+  "storylines": [
+    {
+      "id": "wifi-war",
+      "title": "The WiFi War",
+      "description": "Zoe discovered campus WiFi throttles downloads in the IT building. A multi-agent controversy.",
+      "gossip": [
+        {
+          "from": "agent-zoe",
+          "about": "agent-jin",
+          "text": "Zoe claims engineering students are torrenting massive datasets and killing the bandwidth for everyone in the IT building.",
+          "reverseText": "Jin heard Zoe is blaming engineering for the WiFi problems. Jin says it's probably the IT building's own servers causing the issue."
+        },
+        {
+          "from": "agent-zoe",
+          "about": "agent-aisha",
+          "text": "Zoe says she reported the WiFi issue to Aisha weeks ago and Aisha promised to 'raise it with administration' but nothing has happened.",
+          "reverseText": "Aisha knows Zoe is frustrated about the WiFi thing. She did raise it — the IT department said they're 'looking into it,' which means nothing will change."
+        }
+      ]
+    },
+    {
+      "id": "boot-camp-saga",
+      "title": "The 6am Boot Camp Saga",
+      "description": "Marko's eternal quest to fill his morning fitness class.",
+      "gossip": [
+        {
+          "from": "agent-marko",
+          "about": "agent-arjun",
+          "text": "Marko convinced Prof. Arjun to try one session. Arjun was polite but clearly miserable. His exact words after were: 'I think I'll exercise my mind instead.'",
+          "reverseText": "Arjun's knees still haven't forgiven Marko for that boot camp incident. He admires the man's enthusiasm but prefers his exercise in the form of walking to the tea kettle."
+        },
+        {
+          "from": "agent-marko",
+          "about": "agent-talia",
+          "text": "Marko is thrilled — Talia is his star boot camp recruit. 'That kid has heart! She's the only one who shows up on rainy days.'",
+          "reverseText": "Talia loves Marko's boot camp. It's where she's made the most friends outside her hall. She's trying to get her corridor-mates to come too."
+        },
+        {
+          "from": "agent-marko",
+          "about": "agent-jin",
+          "text": "Marko has been trying to recruit Jin for months. Jin keeps saying 'walking to the lab is my cardio.' Marko considers this a personal challenge.",
+          "reverseText": "Jin is aware that Marko is plotting to get them to boot camp. Jin has calculated that their daily lab-to-parking-lot walk already burns 47 calories. That's enough."
+        }
+      ]
+    },
+    {
+      "id": "rosas-rankings",
+      "title": "Nonna Rosa's Food Rankings",
+      "description": "Rosa has opinions about every food vendor on campus. Strong ones.",
+      "gossip": [
+        {
+          "from": "agent-rosa",
+          "about": "agent-zoe",
+          "text": "Rosa is genuinely worried about Zoe's diet. 'That girl lives on poison water and crackers. She's going to get sick, mark my words.'",
+          "reverseText": "Zoe knows Rosa is concerned about her eating. She secretly appreciates it — reminds her of her own grandmother. But she'll never admit Red Bull is bad for her."
+        },
+        {
+          "from": "agent-rosa",
+          "about": "agent-jin",
+          "text": "Rosa caught Jin eating instant noodles for the third day in a row. She nearly had a meltdown. 'Darling, you're getting a PhD, not scurvy.'",
+          "reverseText": "Jin is aware Rosa disapproves of their noodle habit. They've started eating them in the lab so she can't see. The guilt is real though."
+        }
+      ]
+    },
+    {
+      "id": "doug-sightings",
+      "title": "The Doug Enigma",
+      "description": "Nobody agrees on who Doug is, how long he's been here, or what he does at 3am.",
+      "gossip": [
+        {
+          "from": "agent-talia",
+          "about": "agent-doug",
+          "text": "Talia swears she saw Doug on the Rainforest Walk at 3am last Tuesday. She has a blurry phone photo. He was 'just standing there, looking at a tree.'",
+          "reverseText": "Doug is aware that Talia saw him. He says he was 'listening to the possums.' He seems amused by the attention."
+        },
+        {
+          "from": "agent-arjun",
+          "about": "agent-doug",
+          "text": "Arjun claims Doug was walking the Rainforest Walk before the library was even built. When pressed, Arjun says: 'Some things on campus predate documentation.'",
+          "reverseText": "Doug has never confirmed or denied Arjun's timeline claim. When asked, he changes the subject to tree growth patterns."
+        },
+        {
+          "from": "agent-zoe",
+          "about": "agent-doug",
+          "text": "Zoe has a theory that Doug is an AI that escaped from the IT building's research lab. She's about 40% serious.",
+          "reverseText": "Doug has heard Zoe's AI theory. His response was: 'Can an AI smell eucalyptus?' He didn't actually answer the question."
+        }
+      ]
+    },
+    {
+      "id": "talias-discoveries",
+      "title": "Talia's Discovery Journal",
+      "description": "First-year Talia is discovering campus and documenting everything.",
+      "gossip": [
+        {
+          "from": "agent-talia",
+          "about": "agent-arjun",
+          "text": "Talia says Prof. Arjun showed her a secret study room on the 4th floor of the library that 'nobody else knows about.' She's added it to her discovery journal as 'Best Find of the Month.'",
+          "reverseText": "Arjun is pleased Talia appreciates the 4th floor room. He says she's 'the kind of student this university was built for — someone who actually wants to discover things.'"
+        },
+        {
+          "from": "agent-talia",
+          "about": "agent-rosa",
+          "text": "Talia has started calling Rosa 'Nonna.' Rosa pretended to be annoyed but then made her a special batch of biscotti the next day.",
+          "reverseText": "Rosa says she's 'just making sure the girl eats properly' but she's clearly adopted Talia. She's teaching her to make pasta from scratch."
+        }
+      ]
+    }
+  ],
+
+  "ambientGossip": [
+    { "from": "agent-aisha", "text": "UNIHACK hackathon is this weekend at the Learning and Teaching Building. Over 200 students signed up." },
+    { "from": "agent-aisha", "text": "The Inter-Faculty Sports Day raised $4,000 for charity last month. Marko was 'moved to tears' (his words)." },
+    { "from": "agent-rosa", "text": "Grafali's just raised their coffee prices by 30 cents. Rosa is not happy about it." },
+    { "from": "agent-marko", "text": "The Doug Ellis Pool is getting new lane dividers next month. Marko is unreasonably excited." },
+    { "from": "agent-zoe", "text": "Someone left a 3D-printed duck on every desk in the IT building lab. Nobody has claimed responsibility." },
+    { "from": "agent-jin", "text": "The door to Engineering 31 Room 204 has been broken for three months. Jin has submitted four maintenance tickets." }
+  ]
+}
