@@ -59,19 +59,20 @@ app.get("/health", (_req, res) => {
 });
 
 app.get("/api/campus/:campusId", (req, res) => {
-  if (!campusData || req.params.campusId !== campusData.campusId) {
+  const campus = neighborhood?.getCampus(req.params.campusId);
+  if (!campus) {
     return res.status(404).json({ error: "Campus not found" });
   }
 
   res.json({
-    id: campusData.campusId,
-    name: campusData.name,
-    center: campusData.center,
-    radius: campusData.radius,
-    mapboxStyle: campusData.mapboxStyle,
-    defaultZoom: campusData.defaultZoom,
-    bounds: campusData.bounds,
-    agents: campusData.agents.map((a) => ({
+    id: campus.campusId,
+    name: campus.name,
+    center: campus.center,
+    radius: campus.radius,
+    mapboxStyle: campus.mapboxStyle,
+    defaultZoom: campus.defaultZoom,
+    bounds: campus.bounds,
+    agents: campus.agents.map((a) => ({
       id: a.id,
       name: a.name,
       age: a.age,
@@ -82,6 +83,12 @@ app.get("/api/campus/:campusId", (req, res) => {
       activity: a.state.activity,
     })),
   });
+});
+
+app.get("/api/debug/places/:agentId", (req, res) => {
+  const cached = engine.localKnowledge._googleCache.get(req.params.agentId);
+  if (!cached) return res.json({ error: "No cache for this agent" });
+  res.json(cached.places.map(p => ({ name: p.name, type: p.type, rating: p.rating })));
 });
 
 app.get("/api/agents/:id/profile", (req, res) => {
@@ -205,10 +212,31 @@ const io = new SocketIO(httpServer, {
 async function start() {
   await loadCampusData();
 
+  try {
+    const melbRaw = await readFile(
+      new URL("data/melbourne-city.json", import.meta.url).pathname, "utf-8"
+    );
+    const melbData = JSON.parse(melbRaw);
+    // Merge Melbourne agents into campusData for now
+    // (NeighborhoodManager handles multi-campus properly)
+    campusData.agents.push(...melbData.agents);
+    console.log(`[Data] Loaded ${melbData.agents.length} Melbourne agents`);
+  } catch (err) {
+    console.log(`[Data] No Melbourne data found — running Clayton only`);
+  }
+
   neighborhood = new NeighborhoodManager();
   await neighborhood.loadCampus(
     new URL("data/clayton-campus.json", import.meta.url).pathname
   );
+
+  try {
+    await neighborhood.loadCampus(
+      new URL("data/melbourne-city.json", import.meta.url).pathname
+    );
+  } catch (err) {
+    console.log(`[Neighborhood] Melbourne campus not loaded`);
+  }
 
   activity = new ActivitySystem(campusData, io);
   await activity.loadEvents(

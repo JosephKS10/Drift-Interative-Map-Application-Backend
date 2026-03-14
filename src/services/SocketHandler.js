@@ -95,6 +95,8 @@ export function setupSocketHandlers(io, engine, campusData) {
           mood: result.mood,
           mentionedAgents: result.mentionedAgents,
           mentionedPlaces: result.mentionedPlaces,
+          placeCards: result.placeCards || [],
+          nearbyPlaces: result.nearbyPlaces || [],
           relationship: result.relationship,
         });
 

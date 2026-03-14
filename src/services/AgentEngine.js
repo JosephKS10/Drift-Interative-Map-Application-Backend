@@ -60,6 +60,57 @@ export class AgentEngine {
     };
   }
 
+   /**
+   * Get all cached places near this agent that AREN'T already in placeCards.
+   * Sent to frontend as "more places to explore."
+   */
+  _getNearbyPlaces(agent, excludeCards) {
+    const excludeIds = new Set(excludeCards.map((c) => c.id));
+    const nearby = [];
+
+    // Hardcoded places near this agent
+    if (this.placesData?.places) {
+      for (const place of this.placesData.places) {
+        if (excludeIds.has(place.id)) continue;
+        const dist = this._haversineDistance(
+          agent.location.lat, agent.location.lng,
+          place.lat, place.lng
+        );
+        if (dist <= 5000) {
+          nearby.push(this._formatPlaceCard({
+            ...place,
+            distance: Math.round(dist),
+            photoUrl: null,
+            website: null,
+            isOpen: null,
+            source: "campus",
+          }));
+        }
+      }
+    }
+
+    // Google cached places for this agent
+    const cached = this.localKnowledge._googleCache.get(agent.id);
+    if (cached?.places) {
+      for (const place of cached.places) {
+        if (excludeIds.has(place.id)) continue;
+        if (nearby.some((n) => n.id === place.id)) continue;
+        nearby.push(this._formatPlaceCard({
+          ...place,
+          distance: Math.round(this._haversineDistance(
+            agent.location.lat, agent.location.lng,
+            place.lat, place.lng
+          )),
+        }));
+      }
+    }
+
+    // Sort by rating (best first), then distance
+    nearby.sort((a, b) => (b.rating || 0) - (a.rating || 0) || (a.distance || 0) - (b.distance || 0));
+
+    return nearby.slice(0, 10);
+  }
+
   /**
    * Main entry: chat with an agent.
    *
@@ -127,6 +178,32 @@ export class AgentEngine {
       const mentionedAgents = this._detectAgentMentions(responseText, agentId);
       const mentionedPlaces = this._detectPlaceMentions(responseText);
 
+      const placeCards = [];
+      const nearbyPlaces = this._getNearbyPlaces(agent, placeCards);
+
+      for (const placeId of mentionedPlaces) {
+        const placeData = this.localKnowledge.getPlaceById(placeId, agent);
+        if (placeData) {
+          placeCards.push({
+            id: placeData.id,
+            name: placeData.name,
+            type: placeData.type,
+            lat: placeData.lat,
+            lng: placeData.lng,
+            rating: placeData.rating,
+            ratingCount: placeData.ratingCount || null,
+            address: placeData.address || null,
+            description: placeData.description,
+            insiderTip: placeData.insiderTip || null,
+            photoUrl: placeData.photoUrl || null,
+            website: placeData.website || null,
+            isOpen: placeData.isOpen,
+            distance: placeData.distance,
+            source: placeData.source,
+          });
+        }
+      }
+
        // ── Record gossip: agent mentioned other agents ──
       for (const mentionedId of mentionedAgents) {
         const mentionedAgent = this.campusData.agents.find((a) => a.id === mentionedId);
@@ -143,11 +220,13 @@ export class AgentEngine {
         this.gossip.recordUserMention(agentId, mentionedId, userId, message);
       }
 
-      return {
+     return {
         response: responseText,
         mood: agent.state.mood,
         mentionedAgents,
         mentionedPlaces,
+        placeCards,
+        nearbyPlaces,
         memoryUpdate: memResult.summary,
         relationship: memResult.relationshipScore,
         latencyMs: latency,
@@ -298,6 +377,85 @@ ${proximityNote}`;
   }
 
 
+  /**
+   * Enhanced place detection: after detecting cached matches,
+   * also try to find unmatched place-like names in the response
+   * by searching the Google cache more aggressively.
+   */
+  async _buildPlaceCards(mentionedPlaceIds, responseText, agent) {
+    const placeCards = [];
+    const textLower = responseText.toLowerCase();
+
+    // 1. Build cards for already-detected places
+    for (const placeId of mentionedPlaceIds) {
+      const placeData = this.localKnowledge.getPlaceById(placeId, agent);
+      if (placeData) {
+        placeCards.push(this._formatPlaceCard(placeData));
+      }
+    }
+
+    // 2. Scan response for capitalized multi-word phrases that look like place names
+    //    Pattern: 2-4 capitalized words in a row (e.g., "Laksa King", "Phở Hung")
+    const placeNamePattern = /(?:at|from|to|visit|try|hit up|go to|near)\s+([A-Z\u00C0-\u024F][a-z\u00C0-\u024F]+(?:\s+[A-Z\u00C0-\u024F][a-z\u00C0-\u024F]+){0,3})/g;
+    const possibleNames = [];
+    let match;
+
+    while ((match = placeNamePattern.exec(responseText)) !== null) {
+      const candidate = match[1].trim();
+      // Skip if it's an agent name or a generic word
+      const isAgent = this.campusData.agents.some(
+        (a) => a.name.includes(candidate) || candidate === a.name.split(" ")[0]
+      );
+      if (!isAgent && candidate.length > 3) {
+        possibleNames.push(candidate);
+      }
+    }
+
+    // Also catch "Place Name" after common prepositions without the regex above
+    const simplePattern = /(?:^|\.\s+)([A-Z\u00C0-\u024F][a-z\u00C0-\u024F]+(?:\s+[A-Z\u00C0-\u024F][a-z\u00C0-\u024F]+){1,3})\s+(?:is|does|has|for|on|—|–|-)/g;
+    while ((match = simplePattern.exec(responseText)) !== null) {
+      const candidate = match[1].trim();
+      const isAgent = this.campusData.agents.some(
+        (a) => a.name.includes(candidate) || candidate === a.name.split(" ")[0]
+      );
+      if (!isAgent && candidate.length > 3 && !possibleNames.includes(candidate)) {
+        possibleNames.push(candidate);
+      }
+    }
+
+    // 3. Try to find these candidates in our knowledge
+    for (const name of possibleNames) {
+      // Skip if we already have a card for this
+      if (placeCards.some((c) => c.name.toLowerCase().includes(name.toLowerCase()))) continue;
+
+      const found = this.localKnowledge.findPlaceByName(name, agent);
+      if (found) {
+        placeCards.push(this._formatPlaceCard(found));
+      }
+    }
+
+    return placeCards;
+  }
+
+  _formatPlaceCard(placeData) {
+    return {
+      id: placeData.id,
+      name: placeData.name,
+      type: placeData.type,
+      lat: placeData.lat,
+      lng: placeData.lng,
+      rating: placeData.rating,
+      ratingCount: placeData.ratingCount || null,
+      address: placeData.address || null,
+      description: placeData.description,
+      insiderTip: placeData.insiderTip || null,
+      photoUrl: placeData.photoUrl || null,
+      website: placeData.website || null,
+      isOpen: placeData.isOpen ?? null,
+      distance: placeData.distance,
+      source: placeData.source,
+    };
+  }
 
 
 
@@ -339,17 +497,80 @@ ${proximityNote}`;
     return `${firstName} was mentioned in conversation`;
   }
 
-  /**
+ /**
    * Detect if the response mentions known places.
+   * Checks both hardcoded places AND cached Google Places.
    */
-  _detectPlaceMentions(text) {
-    if (!this.placesData) return [];
+   _detectPlaceMentions(text) {
     const mentioned = [];
-    for (const place of this.placesData.places) {
-      if (text.includes(place.name)) {
-        mentioned.push(place.id);
+    const textLower = text.toLowerCase();
+
+    const PLACE_ALIASES = {
+      "grafalis": ["grafali's", "grafalis", "grafali"],
+      "church-of-secular": ["church of secular", "secular coffee"],
+      "sammys": ["sammy's", "sammys"],
+      "wholefoods": ["wholefoods", "whole foods"],
+      "gyg": ["gyg", "guzman", "guzman y gomez"],
+      "halls-cafe": ["halls cafe", "halls café"],
+      "library": ["matheson library", "the library"],
+      "ltb": ["learning and teaching", "ltb"],
+      "monash-sport": ["monash sport"],
+      "bus-interchange": ["bus interchange", "bus loop"],
+      "rainforest-walk": ["rainforest walk"],
+      "alexander-theatre": ["alexander theatre"],
+    };
+
+    // Check hardcoded places using aliases
+    if (this.placesData?.places) {
+      for (const place of this.placesData.places) {
+        const aliases = PLACE_ALIASES[place.id] || [];
+        const fullName = place.name.toLowerCase();
+
+        if (textLower.includes(fullName) || aliases.some((a) => textLower.includes(a))) {
+          if (!mentioned.includes(place.id)) {
+            mentioned.push(place.id);
+          }
+        }
       }
     }
+
+    // Check cached Google Places
+     if (this.localKnowledge?._googleCache) {
+      for (const cached of this.localKnowledge._googleCache.values()) {
+        for (const place of cached.places || []) {
+          if (mentioned.includes(place.id)) continue;
+
+          const placeName = place.name.toLowerCase();
+          
+          // Forward: response contains the place name
+          if (textLower.includes(placeName)) {
+            mentioned.push(place.id);
+            continue;
+          }
+
+          // Reverse: place name contains a phrase from the response
+          // Split place name into core words, check if they appear together in response
+          const coreWords = placeName.split(/\s+/).filter(w => w.length > 3);
+          if (coreWords.length >= 2) {
+            const allFound = coreWords.every(w => textLower.includes(w));
+            if (allFound) {
+              mentioned.push(place.id);
+              continue;
+            }
+          }
+
+          // Partial: first two significant words match (e.g., "Laksa King" matches "Laksa King Restaurant")
+          const placeWords = placeName.split(/\s+/).filter(w => w.length > 2);
+          if (placeWords.length >= 2) {
+            const firstTwo = placeWords.slice(0, 2).join(" ");
+            if (textLower.includes(firstTwo)) {
+              mentioned.push(place.id);
+            }
+          }
+        }
+      }
+    }
+
     return mentioned;
   }
 

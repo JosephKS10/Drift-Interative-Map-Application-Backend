@@ -57,9 +57,8 @@ export class LocalKnowledge {
     if (merged.length === 0 && this._secrets.length === 0) return null;
 
     // Format for the prompt
-    let ctx = "## LOCAL KNOWLEDGE (places near you)\n";
-
-    for (const place of merged.slice(0, 6)) {
+let ctx = "## LOCAL KNOWLEDGE (places near you)\nIMPORTANT: When recommending places, you MUST use names from this list. Mention at least 3-4 specific places by their exact name below. Do NOT make up place names or use generic descriptions like 'the Vietnamese bakery' — use the actual business name from this list instead:\n";
+      for (const place of merged)  {
       ctx += `- ${place.name} (${place.distance}m away`;
       if (place.rating) ctx += `, ${place.rating}★`;
       ctx += `): ${place.description}`;
@@ -115,7 +114,7 @@ export class LocalKnowledge {
       const places = await this._fetchGoogleNearby(
         agent.location.lat,
         agent.location.lng,
-        500 // 500m radius
+        5000 // 5000m radius
       );
 
       // Cache the results
@@ -141,8 +140,13 @@ export class LocalKnowledge {
     const url = "https://places.googleapis.com/v1/places:searchNearby";
 
     const body = {
-      includedTypes: ["cafe", "restaurant", "library", "gym", "book_store", "convenience_store"],
-      maxResultCount: 10,
+      includedTypes: [
+        "cafe", "restaurant", "library", "gym", "book_store",
+        "convenience_store", "bar", "bakery", "market", "museum",
+        "tourist_attraction", "park", "night_club", "meal_takeaway",
+        "shopping_mall", "art_gallery"
+      ],
+      maxResultCount: 20,
       locationRestriction: {
         circle: {
           center: { latitude: lat, longitude: lng },
@@ -156,7 +160,7 @@ export class LocalKnowledge {
       headers: {
         "Content-Type": "application/json",
         "X-Goog-Api-Key": this.googleApiKey,
-        "X-Goog-FieldMask": "places.displayName,places.rating,places.formattedAddress,places.location,places.types,places.userRatingCount",
+        "X-Goog-FieldMask": "places.id,places.displayName,places.rating,places.formattedAddress,places.location,places.types,places.userRatingCount,places.photos,places.websiteUri,places.currentOpeningHours",
       },
       body: JSON.stringify(body),
     });
@@ -170,19 +174,32 @@ export class LocalKnowledge {
     const places = data.places || [];
 
     // Transform to our format
-    return places.map((p) => ({
-      id: `google-${p.displayName?.text?.toLowerCase().replace(/\s+/g, "-") || "unknown"}`,
-      name: p.displayName?.text || "Unknown Place",
-      type: this._mapGoogleType(p.types),
-      lat: p.location?.latitude,
-      lng: p.location?.longitude,
-      rating: p.rating || null,
-      ratingCount: p.userRatingCount || 0,
-      description: `${p.displayName?.text} near campus`,
-      address: p.formattedAddress || null,
-      insiderTip: null, // Google places don't have insider tips
-      source: "google",
-    }));
+    return places.map((p) => {
+      // Build photo URL if available
+      let photoUrl = null;
+      if (p.photos?.length > 0) {
+        const photoRef = p.photos[0].name; // e.g., "places/xxx/photos/yyy"
+        photoUrl = `https://places.googleapis.com/v1/${photoRef}/media?maxWidthPx=400&key=${this.googleApiKey}`;
+      }
+
+      return {
+        id: `google-${p.displayName?.text?.toLowerCase().replace(/[^a-z0-9]+/g, "-") || "unknown"}`,
+        googlePlaceId: p.id || null,
+        name: p.displayName?.text || "Unknown Place",
+        type: this._mapGoogleType(p.types),
+        lat: p.location?.latitude,
+        lng: p.location?.longitude,
+        rating: p.rating || null,
+        ratingCount: p.userRatingCount || 0,
+        description: `${p.displayName?.text} near campus`,
+        address: p.formattedAddress || null,
+        insiderTip: null,
+        photoUrl,
+        website: p.websiteUri || null,
+        isOpen: p.currentOpeningHours?.openNow ?? null,
+        source: "google",
+      };
+    });
   }
 
   /**
@@ -260,6 +277,93 @@ export class LocalKnowledge {
       Math.sin(dLng / 2) ** 2;
     return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   }
+
+    /**
+   * Look up a place by ID from all known sources (hardcoded + Google cache).
+   * Returns full place data for building place cards.
+   *
+   * @param {string} placeId - place ID (e.g., "grafalis" or "google-lune-croissanterie")
+   * @param {Object} agent - agent object for distance calculation
+   * @returns {Object|null} full place data with distance
+   */
+  getPlaceById(placeId, agent) {
+    // Check hardcoded places first
+    const hardcoded = this._hardcodedPlaces.find((p) => p.id === placeId);
+    if (hardcoded) {
+      return {
+        ...hardcoded,
+        distance: agent ? Math.round(
+          this._haversineDistance(
+            agent.location.lat, agent.location.lng,
+            hardcoded.lat, hardcoded.lng
+          )
+        ) : null,
+        photoUrl: null,
+        website: null,
+        isOpen: null,
+        source: "campus",
+      };
+    }
+
+    // Check Google cache across all agents
+    for (const cached of this._googleCache.values()) {
+      const googlePlace = cached.places?.find((p) => p.id === placeId);
+      if (googlePlace) {
+        return {
+          ...googlePlace,
+          distance: agent ? Math.round(
+            this._haversineDistance(
+              agent.location.lat, agent.location.lng,
+              googlePlace.lat, googlePlace.lng
+            )
+          ) : null,
+        };
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Search all known places (hardcoded + cached Google) by name substring.
+   * Used when AgentEngine detects a place name in the response text.
+   *
+   * @param {string} query - place name to search for
+   * @param {Object} agent - agent for distance calc
+   * @returns {Object|null}
+   */
+  findPlaceByName(query, agent) {
+    const queryLower = query.toLowerCase();
+
+    // Check hardcoded
+    for (const place of this._hardcodedPlaces) {
+      if (place.name.toLowerCase().includes(queryLower) ||
+          queryLower.includes(place.name.toLowerCase())) {
+        return this.getPlaceById(place.id, agent);
+      }
+    }
+
+    // Check all Google caches
+    for (const cached of this._googleCache.values()) {
+      for (const place of cached.places || []) {
+        if (place.name.toLowerCase().includes(queryLower) ||
+            queryLower.includes(place.name.toLowerCase())) {
+          return {
+            ...place,
+            distance: agent ? Math.round(
+              this._haversineDistance(
+                agent.location.lat, agent.location.lng,
+                place.lat, place.lng
+              )
+            ) : null,
+          };
+        }
+      }
+    }
+
+    return null;
+  }
+
 
   /**
    * Stats for debugging.
