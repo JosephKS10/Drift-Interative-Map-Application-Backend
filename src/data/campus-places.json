@@ -1,0 +1,151 @@
+{
+  "campusId": "clayton",
+
+  "places": [
+    {
+      "id": "grafalis",
+      "name": "Grafali's Coffee Roasters",
+      "type": "cafe",
+      "lat": -37.9108,
+      "lng": 145.1330,
+      "rating": 4.5,
+      "description": "Popular campus cafe. Long queues but worth it. Best flat white on campus.",
+      "insiderTip": "Go before 9am to skip the line. The crispy chicken wrap is a hidden gem.",
+      "priceRange": "$$"
+    },
+    {
+      "id": "church-of-secular",
+      "name": "Church of Secular Coffee",
+      "type": "cafe",
+      "lat": -37.9105,
+      "lng": 145.1345,
+      "rating": 4.7,
+      "description": "Cozy, warm atmosphere. Great pastries. Quieter than Grafali's.",
+      "insiderTip": "The staff know all the regulars. Modern comfortable vibe. Open until 8pm.",
+      "priceRange": "$$"
+    },
+    {
+      "id": "sammys",
+      "name": "Sammy's Cafe",
+      "type": "cafe",
+      "lat": -37.9135,
+      "lng": 145.1292,
+      "rating": 4.3,
+      "description": "In the Monash Sport building. Huge portions, locally sourced. Marko's second home.",
+      "insiderTip": "Open 7 days. The catering is surprisingly good for events.",
+      "priceRange": "$"
+    },
+    {
+      "id": "wholefoods",
+      "name": "Monash Wholefoods Co-op",
+      "type": "restaurant",
+      "lat": -37.9102,
+      "lng": 145.1325,
+      "rating": 4.4,
+      "description": "Student-run co-op. Cheap salads, vegetarian-heavy, good vibes.",
+      "insiderTip": "Best value meal on campus. Rosa approves of their vegetable game.",
+      "priceRange": "$"
+    },
+    {
+      "id": "gyg",
+      "name": "Guzman y Gomez (GYG)",
+      "type": "restaurant",
+      "lat": -37.9105,
+      "lng": 145.1338,
+      "rating": 4.2,
+      "description": "Just opened. Burritos, bowls. Open for breakfast, lunch, dinner.",
+      "insiderTip": "Rosa says it's 'not real Mexican' but students love it. Burrito bowls are best value.",
+      "priceRange": "$$"
+    },
+    {
+      "id": "halls-cafe",
+      "name": "Halls Cafe",
+      "type": "restaurant",
+      "lat": -37.9073,
+      "lng": 145.1405,
+      "rating": 4.0,
+      "description": "Dining hub for residential students. Affordable, nutritious meals. Pool table and piano inside.",
+      "insiderTip": "Open to all students, not just residents. Lunch 12-2:30pm, dinner 6-8pm. Student M-Pass gets discounts.",
+      "priceRange": "$"
+    },
+    {
+      "id": "library",
+      "name": "Sir Louis Matheson Library",
+      "type": "library",
+      "lat": -37.9112,
+      "lng": 145.1319,
+      "rating": 4.6,
+      "description": "Main campus library. Multiple floors, quiet zones, group rooms.",
+      "insiderTip": "4th floor window desks are the best-kept secret. Almost nobody goes up there. 24/7 during exam period.",
+      "priceRange": null
+    },
+    {
+      "id": "ltb",
+      "name": "Learning and Teaching Building",
+      "type": "study_space",
+      "lat": -37.9100,
+      "lng": 145.1300,
+      "rating": 4.3,
+      "description": "Modern building with lecture theatres, study spaces, and group rooms.",
+      "insiderTip": "The UNIHACK hackathon is being held here. Great power outlets everywhere.",
+      "priceRange": null
+    },
+    {
+      "id": "monash-sport",
+      "name": "Monash Sport",
+      "type": "gym",
+      "lat": -37.9135,
+      "lng": 145.1290,
+      "rating": 4.4,
+      "description": "Full gym, pool, courts, group fitness. Student memberships available.",
+      "insiderTip": "Marko's 6am boot camp is free for first-timers. Doug Ellis Pool is surprisingly good.",
+      "priceRange": "$$"
+    },
+    {
+      "id": "bus-interchange",
+      "name": "Clayton Campus Bus Interchange",
+      "type": "transport",
+      "lat": -37.9100,
+      "lng": 145.1310,
+      "rating": null,
+      "description": "Main bus hub. Routes 601, 630, 900 and more. Connects to Clayton station.",
+      "insiderTip": "The 601 to Huntingdale station is fastest for the train line. 630 goes through Chadstone.",
+      "priceRange": null
+    },
+    {
+      "id": "rainforest-walk",
+      "name": "The Rainforest Walk",
+      "type": "landmark",
+      "lat": -37.9095,
+      "lng": 145.1355,
+      "rating": 4.8,
+      "description": "Tree-lined walking path between science buildings. Surprisingly beautiful for a university.",
+      "insiderTip": "Best at sunset. Doug is usually somewhere along here. Look for his handwritten notes on benches.",
+      "priceRange": null
+    },
+    {
+      "id": "alexander-theatre",
+      "name": "Alexander Theatre",
+      "type": "landmark",
+      "lat": -37.9115,
+      "lng": 145.1340,
+      "rating": 4.5,
+      "description": "Campus theatre. Student productions, events, occasional film screenings.",
+      "insiderTip": "They show art-house films sometimes. Check the MSA events calendar.",
+      "priceRange": "$"
+    }
+  ],
+
+  "secretKnowledge": [
+    "The 4th floor of the Matheson Library has a row of window desks almost nobody uses. Best study spot on campus.",
+    "The vending machine in Engineering 31 basement is consistently 50c cheaper than the ones in Campus Centre.",
+    "There's a shortcut through the Biological Sciences building that saves 5 minutes getting from Rainforest Walk to College Walk.",
+    "The Religious Centre (Building 9) has a meditation room open to everyone, not just religious students. Quietest place on campus.",
+    "If you need to print and the Campus Centre printers are full, the ones in the Engineering postgrad room are almost always free after 5pm.",
+    "The Doug Ellis Swimming Pool does casual swims for students. Way less crowded than the gym.",
+    "Grafali's does a loyalty card — 10th coffee free. But you have to ask for it, they don't advertise it.",
+    "The bus interchange has phone charging points on the benches. Most people don't notice them.",
+    "During exam period, the library vending machines get restocked twice as often. The chocolate row still runs out by Wednesday.",
+    "The rooftop of the Learning and Teaching Building has a study area with city views. You need a student card to access it."
+  ]
+}
