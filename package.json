@@ -1,0 +1,30 @@
+{
+  "name": "drift-backend",
+  "version": "1.0.0",
+  "description": "Drift — AI Neighbors on Your Campus (Monash Edition)",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "test": "node test/chat-test.js",
+    "test:campus": "node test/campus-session.js"
+  },
+  "keywords": ["hackathon", "unihack", "ai", "campus", "monash", "agents"],
+  "author": "Team Drift",
+  "license": "MIT",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.78.0",
+    "compression": "^1.8.1",
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "helmet": "^8.1.0",
+    "socket.io": "^4.8.3",
+    "uuid": "^13.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14",
+    "socket.io-client": "^4.8.3"
+  }
+}
