@@ -32,7 +32,7 @@ export function setupSocketHandlers(io, engine, campusData) {
     let userId = `user-${socket.id.substring(0, 8)}`;
     let userLocation = null;
     let activeChat = null;         // agentId currently chatting with
-    let nearbyAgents = new Set();  // agents currently in proximity
+    let nearbyAgents = new Map();  // agents currently in proximity
 
     // ─── CHAT START ────────────────────────────────────────
     socket.on(SocketEvents.CHAT_START, ({ agentId }, ack) => {
@@ -169,44 +169,52 @@ function checkProximity(socket, userLocation, nearbyAgents, campusData, engine, 
       agent.location.lat, agent.location.lng
     );
 
-    const wasNearby = nearbyAgents.has(agent.id);
-    const isNearby = dist <= zones.vicinity; // 300m
+    const prevZone = nearbyAgents.get(agent.id) || null;
+    const isNearby = dist <= zones.vicinity;
 
-    if (isNearby && !wasNearby) {
-      // Entered proximity
-      nearbyAgents.add(agent.id);
+    const newZone = isNearby
+      ? (dist <= zones.intimate ? "intimate" :
+         dist <= zones.nearby ? "nearby" : "vicinity")
+      : null;
 
-      const zone = dist <= zones.intimate ? "intimate" :
-                   dist <= zones.nearby ? "nearby" : "vicinity";
+    // Zone changed (including null → zone and zone → null)
+    if (newZone !== prevZone) {
 
-      socket.emit(SocketEvents.PROXIMITY_ENTER, {
-        agentId: agent.id,
-        name: agent.name,
-        avatar: agent.avatar,
-        distance: Math.round(dist),
-        zone,
-      });
+      if (newZone) {
+        // Entered or changed zone
+        nearbyAgents.set(agent.id, newZone);
 
-      // If very close, agent waves
-      if (dist <= zones.nearby && agent.state.proximityGreeting) {
-        socket.emit("agent:wave", {
+        socket.emit(SocketEvents.PROXIMITY_ENTER, {
           agentId: agent.id,
           name: agent.name,
           avatar: agent.avatar,
-          message: agent.state.proximityGreeting,
           distance: Math.round(dist),
+          zone: newZone,
         });
+
+        // Wave when entering intimate or nearby (not just first entry)
+        if ((newZone === "intimate" || newZone === "nearby") && 
+            prevZone !== "intimate" && prevZone !== "nearby" &&
+            agent.state.proximityGreeting) {
+          socket.emit("agent:wave", {
+            agentId: agent.id,
+            name: agent.name,
+            avatar: agent.avatar,
+            message: agent.state.proximityGreeting,
+            distance: Math.round(dist),
+          });
+        }
+
+        console.log(`[Proximity] ${userId} → ${newZone} zone of ${agent.name} (${Math.round(dist)}m)`);
+
+      } else {
+        // Left all zones
+        nearbyAgents.delete(agent.id);
+        socket.emit(SocketEvents.PROXIMITY_LEAVE, {
+          agentId: agent.id,
+        });
+        console.log(`[Proximity] ${userId} left zone of ${agent.name}`);
       }
-
-      console.log(`[Proximity] ${userId} entered ${zone} zone of ${agent.name} (${Math.round(dist)}m)`);
-
-    } else if (!isNearby && wasNearby) {
-      // Left proximity
-      nearbyAgents.delete(agent.id);
-      socket.emit(SocketEvents.PROXIMITY_LEAVE, {
-        agentId: agent.id,
-      });
-      console.log(`[Proximity] ${userId} left zone of ${agent.name}`);
     }
   }
 }
